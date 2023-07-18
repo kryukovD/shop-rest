@@ -1,0 +1,62 @@
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/Inter-Regular.ttf");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/Inter-Bold.ttf");
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/Inter-Medium.ttf");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/Inter-SemiBold.ttf");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/Inter-Medium.ttf");
+  font-weight: 500;
+}
+@font-face{
+  font-family: "Poppins";
+  src: url("../assets/fonts/Poppins-Bold.ttf");
+  font-weight: 700;
+}
+@font-face{
+  font-family: "Poppins";
+  src: url("../assets/fonts/Poppins-SemiBold.ttf");
+  font-weight: 600;
+}
+@font-face{
+  font-family: "Poppins";
+  src: url("../assets/fonts/Poppins-Regular.ttf");
+  font-weight: 400;
+}
+.container{
+  padding: 0px;
+  max-width: 1220px;
+}
+main{
+  background: white;
+  font-family: "Inter";
+  font-size: 14px;
+  line-height: 16.8px;
+}
+ul{
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+.navgation-ui__link{
+   font-family: "Inter";
+   font-weight: 400;
+   font-size: 14px;
+   line-height: 16px;
+   color: #223263;
+}
