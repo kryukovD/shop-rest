@@ -11,29 +11,31 @@ export default {
       paginationCards:[],
       page:1,
       singlePageItems:10
+
     };
   },
   methods:{
     intersected() {
         // this.paginationCards=[...this.paginationCards,...this.catalogCards.slice((this.page-1)*(this.singlePageItems),(this.page*(this.singlePageItems)))];
         getPaginateProducts(this.page).then((responce)=>{
-          if(responce.data.products.data.length>0){
-            console.log(responce.data.products.data)
-            this.paginationCards=[...this.paginationCards,...responce.data.products.data]
+          if(responce.data.data.length>0){
+            this.paginationCards=[...this.paginationCards,...responce.data.data]
             this.page+=1
           }
-     
           
         })
         
     }
+  
   },
    created(){
-     getAllProducts(this.page).then((responce)=>{
-      this.catalogCards.data=responce.data.products
+     getAllProducts(this.page).then((response)=>{
+      this.catalogCards.data=response.data.data
      })
     
-  }
+  },
+ 
+
 };
 </script>
 
@@ -43,6 +45,7 @@ export default {
     <AmBreadcrumbs
     :showCurrentCrumb="true" />
     <div class="container">
+      <div class="d-flex justyf-content-center text-center" v-if="paginationCards.length==0"><p class="text-center">Каталог пуст</p></div>
       <div class="grid-row">
         <!-- Карточка-->
    
@@ -96,9 +99,10 @@ export default {
 
 .grid-row {
   display: grid;
-  justify-content: space-between;
   row-gap: 50px;
-  grid-template-columns: repeat(auto-fit, minmax(223px, 223px));
+  grid-template-columns: repeat(auto-fill, minmax(223px, 223px));
+  column-gap: 41px;
+  justify-content: space-between;
 
 }
 .catalog-card__image-wrapper {

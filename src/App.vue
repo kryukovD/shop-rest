@@ -75,6 +75,9 @@ h1{
 p{
   margin: 0px;
 }
+.row{
+  margin: 0px;
+}
 /*Глобальный адаптив */
 @media (max-width:767.8px) {
    .container{

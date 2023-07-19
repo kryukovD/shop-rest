@@ -405,9 +405,9 @@ export default {
     },
     getProduct() {
       getProductById(this.$route.params.id).then((responce) => {
-        this.detailCard = responce.data.products;
+        this.detailCard = responce.data.data;
         getCurrentCategory(this.detailCard.category_id).then((categoryResponce)=> {
-          this.category = categoryResponce.data.category;
+          this.category = categoryResponce.data[0];
           this.createBreadcrumbs()
         });
       });
@@ -436,7 +436,7 @@ export default {
     this.getProduct();
   },
   watch: {
-    $route: () => {
+    $route: function() {
       this.getProduct();
     },
   },

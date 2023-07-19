@@ -19,17 +19,21 @@ export default {
   },
   methods: {
     intersected() {
+      this,this.getProducts();
+    },
+
+    getProducts(){
       getProductsCategory(this.$route.params.id, this.page).then((responce) => {
         this.paginationCards = [
           ...this.paginationCards,
-          ...responce.data.products.data,
+          ...responce.data.data.lists,
         ];
         this.page += 1;
       });
     },
     getCategory() {
       getCurrentCategory(this.$route.params.id).then((responce) => {
-        this.dataCategory = responce.data.category;
+        this.dataCategory = responce.data[0];
         this.createBreadCrumbs()
       });
     },
@@ -53,7 +57,11 @@ export default {
   },
   watch: {
     $route: function () {
+      this.page=1;
+      this.paginationCards=[];
       this.getCategory();
+      this.getProducts();
+  
     },
   },
 };
@@ -66,6 +74,7 @@ export default {
       :items="breadcrumbs"
     />
     <div class="container">
+      
       <div class="section-catalog__inner">
         <div class="menu-catalog">
           <span> Категории </span>
@@ -90,7 +99,7 @@ export default {
             </li>
           </ul>
         </div>
-
+        <div class="d-flex justyf-content-center text-center mx-auto" v-if="paginationCards.length==0"><p class="text-center">Каталог пуст</p></div>
         <div class="grid-row">
           <!-- Карточка-->
 
@@ -187,7 +196,8 @@ export default {
   flex-grow: 1;
   justify-content: space-between;
   row-gap: 50px;
-  grid-template-columns: repeat(auto-fit, minmax(223px, 223px));
+  column-gap: 41px;
+  grid-template-columns: repeat(auto-fill, minmax(223px, 223px));
 }
 .section-catalog__title {
   margin-bottom: 30px;
