@@ -22,6 +22,18 @@
                                     </div>
                                      <input class="flex-grow-1" v-model="form.password" type="password" placeholder="Пароль"> </div>
                             </div>
+
+                            <div class="col-12  section-sign__col">
+                                <div class="section-sign__wrap-input d-flex">
+                                    <div class="auth-errors" v-for="(error, index) of v$.form.repeatPassword.$errors"
+                                        :key="index">
+                                        {{ error.$message }}
+                                    </div>
+                                    <input  v-model="form.repeatPassword" class="flex-grow-1" type="password"
+                                        placeholder="Повторите пароль">
+                                </div>
+                            </div>
+
                             <div class="col-12 section-sign__col">
                                 <button type="submit" class="btn-auth" href="javascript:void(0)">Вход</button>
                             </div>
@@ -36,7 +48,9 @@
                                 
                             </div>
                             
-
+                            <div class="error text-center" v-if="message!==null">
+                                {{ this.message }}
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -45,7 +59,7 @@
     </main>
 </template>
  <script>
- import { email, required,helpers } from '@vuelidate/validators'
+ import { email, required,helpers,sameAs } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import {authorizeUser} from "../api.js"
 export default {
@@ -53,8 +67,10 @@ export default {
         return {
             form:{
                 email:null,
-                password:null
-            }
+                password:null,
+                repeatPassword:null
+            },
+            message:null
         }
     },
     setup: () => ({ v$: useVuelidate({$autoDirty:true}) }),
@@ -62,7 +78,8 @@ export default {
     return {
       form: {
         email: { required:helpers.withMessage('Обязательное поле*', required),email:helpers.withMessage('Некорректный email*', email)},
-        password: {  required:helpers.withMessage('Обязательное поле*', required)}
+        password: {  required:helpers.withMessage('Обязательное поле*', required)},
+        repeatPassword: { sameAsPassword:helpers.withMessage('Пароли должны совпадать',sameAs(this.form.password) )}
       }
     }
 },
@@ -72,9 +89,16 @@ methods: {
       // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
       if (isFormCorrect) {
         let resultAuth=await authorizeUser(this.form.email,this.form.password);
-        console.log(resultAuth);
-        localStorage.setItem('user',JSON.stringify(resultAuth.data.user));
-        this.$router.push("/profile");
+        console.log(JSON.stringify(resultAuth.data));
+        if(resultAuth.data == ""){
+            this.message="Такого пользователя нет"
+        }
+        else{
+            this.message=null
+            localStorage.setItem('user',JSON.stringify(resultAuth.data.user));
+              this.$router.push("/profile");
+        }
+        
       }
      
     }
@@ -85,6 +109,10 @@ methods: {
 }
  </script>
 <style scoped>
+.error{
+    color: red;
+    font-size: 12px;
+}
 .section-sign__form >.row{
     margin: 0px;
 }
@@ -170,6 +198,12 @@ methods: {
         color: #5C61F4;
         font-weight: 700;
     }
+    .section-sign__col:nth-child(3) {
+         margin-bottom: 16px;
+    }
+    .section-sign__col:nth-child(4) {
+         margin-bottom: 30px;
+    }
     @media (max-width:768px){
         .section-sign-signIn {
             width:100%;
@@ -208,6 +242,7 @@ methods: {
     .section-sign__problems > div {
         font-size: 12px;
     }
+   
     }
  
    

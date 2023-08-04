@@ -1,5 +1,6 @@
 <script>
 import { getAllProducts ,getPaginateProducts} from "../api.js";
+const apiServer = import.meta.env.VITE_APP_SERVER
 import Observer from "../components/Observer.vue"
 export default {
     components:{
@@ -10,7 +11,8 @@ export default {
       catalogCards: [],
       paginationCards:[],
       page:1,
-      singlePageItems:10
+      singlePageItems:10,
+      apiServer:apiServer
 
     };
   },
@@ -30,6 +32,7 @@ export default {
   },
    created(){
      getAllProducts(this.page).then((response)=>{
+      console.log(response.data.data)
       this.catalogCards.data=response.data.data
      })
     
@@ -55,7 +58,7 @@ export default {
           :key="key"
         >
           <div class="catalog-card__image-wrapper order-1 order-md-1">
-            <img src="../assets/images/pseudo.png" />
+            <img :src="apiServer + card.images.preview" />
           </div>
           <div class="catalog-card__description order-4 order-md-2">
             <div class="catalog-card__price">
@@ -101,7 +104,6 @@ export default {
   display: grid;
   row-gap: 50px;
   grid-template-columns: repeat(auto-fill, minmax(223px, 223px));
-  column-gap: 41px;
   justify-content: space-between;
 
 }
@@ -109,11 +111,12 @@ export default {
   width: 223px;
   aspect-ratio: 223/256;
   margin-bottom: 12px;
+  overflow: hidden;
 }
 .catalog-card__image-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 .section-catalog {
   padding: 42px 0px;
@@ -175,6 +178,7 @@ export default {
     width: 100%;
     aspect-ratio: 156/208;
     margin-bottom: 12px;
+    overflow: hidden;
   }
   .section-catalog {
     padding-top:100px;

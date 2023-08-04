@@ -1,7 +1,8 @@
 <script>
-import { getProductsCategory, getCurrentCategory } from "../api.js";
+import { getProductsCategory, getCurrentCategory,getChildCategories } from "../api.js";
 import Observer from "../components/Observer.vue";
 import Breadcrumb from "../components/Breadcrumb.vue";
+const apiServer = import.meta.env.VITE_APP_SERVER
 export default {
   components: {
     Observer: Observer,
@@ -15,26 +16,36 @@ export default {
       singlePageItems: 10,
       dataCategory: {},
       breadcrumbs: [],
+      apiServer:apiServer,
+      childrenCategories:[]
     };
   },
   methods: {
     intersected() {
-      this,this.getProducts();
+      this.getProducts();
     },
 
     getProducts(){
       getProductsCategory(this.$route.params.id, this.page).then((responce) => {
+       
         this.paginationCards = [
           ...this.paginationCards,
-          ...responce.data.data.lists,
+          ...responce.data.data.products,
         ];
         this.page += 1;
       });
     },
     getCategory() {
       getCurrentCategory(this.$route.params.id).then((responce) => {
-        this.dataCategory = responce.data[0];
+        this.dataCategory = responce.data.category;
         this.createBreadCrumbs()
+        
+      getChildCategories(responce.data.id).then((responseChildren) => {
+        this.childrenCategories = responseChildren.data.child_category
+
+      });
+   
+        
       });
     },
     createBreadCrumbs() {
@@ -53,7 +64,6 @@ export default {
   },
   created() {
     this.getCategory();
-    this.intersected();
   },
   watch: {
     $route: function () {
@@ -81,21 +91,10 @@ export default {
           <ul class="section-catalog__menu">
             <li class="menu-catalog-main">
               <a href="javascript:void(0)">{{ dataCategory.name }}</a>
-              <!-- <ul class="menu-catalog-main__children">
-                    <li> <router-link to="/">Блузки и рубашки</router-link></li>
-                    <li> <router-link to="/">Брюки</router-link></li>
-                    <li> <router-link to="/">Верхняя одежда</router-link></li>
-                    <li> <router-link to="/">Джинсы</router-link></li>
-                    <li> <router-link to="/">Костюмы</router-link></li>
-                    <li> <router-link to="/">Лонгсливы</router-link></li>
-                    <li> <router-link to="/">Толстовки</router-link></li>
-                    <li> <router-link to="/">Блузки и рубашки</router-link></li>
-                    <li> <router-link to="/">Брюки</router-link></li>
-                    <li> <router-link to="/">Верхняя одежда</router-link></li>
-                    <li> <router-link to="/">Джинсы</router-link></li>
-                    <li> <router-link to="/">Костюмы</router-link></li>
-                    <li> <router-link to="/">Толстовки</router-link></li>
-                </ul> -->
+               <ul class="menu-catalog-main__children" v-if="childrenCategories.length>0">
+                    <li v-for="(child_category,key) of childrenCategories" :key="key"> <router-link :to="'/catalog/category/'+child_category.id">{{child_category.name }}</router-link></li>
+                  
+                </ul> 
             </li>
           </ul>
         </div>
@@ -110,7 +109,7 @@ export default {
             :key="key"
           >
             <div class="catalog-card__image-wrapper order-1 order-md-1">
-              <img src="../assets/images/pseudo.png" />
+              <img :src="apiServer + card.images.preview" />
             </div>
             <div class="catalog-card__description order-4 order-md-2">
               <div class="catalog-card__price">
@@ -196,7 +195,6 @@ export default {
   flex-grow: 1;
   justify-content: space-between;
   row-gap: 50px;
-  column-gap: 41px;
   grid-template-columns: repeat(auto-fill, minmax(223px, 223px));
 }
 .section-catalog__title {
@@ -206,11 +204,12 @@ export default {
   width: 223px;
   aspect-ratio: 223/256;
   margin-bottom: 12px;
+  overflow: hidden;
 }
 .catalog-card__image-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 .section-catalog {
   padding: 42px 0px;

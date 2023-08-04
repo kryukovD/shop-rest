@@ -1,5 +1,5 @@
 <script>
-import { getCategories, getCategoryById } from "../api.js"
+import { getCategories, getChildCategories } from "../api.js"
 import { ref } from "vue";
 export default {
   data() {
@@ -23,7 +23,7 @@ export default {
   },
   created() {
     getCategories().then((responce) => {
-      this.categories = responce.data.data
+      this.categories = responce.data
     })
      
   },
@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     getChildrenCategories(id) {
-      getCategoryById(id).then((response) => {
+      getChildCategories(id).then((response) => {
         this.childrenCategories = response.data.child_category
       });
     },

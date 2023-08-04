@@ -25,13 +25,25 @@
                                     <input v-model="form.email" class="flex-grow-1" type="text" placeholder="Ваш Email">
                                 </div>
                             </div>
+
+                            <div class="col-12">
+
+                                <div class="section-sign__wrap-input d-flex">
+                                    <div class="auth-errors" v-for="(error, index) of v$.form.phone.$errors" :key="index">
+                                        {{ error.$message }}
+                                    </div>
+                                    <input v-mask="'+7 ### #### ###'" v-model="form.phone" class="flex-grow-1"   type="text" placeholder="Телефон">
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <div class="section-sign__wrap-input d-flex">
                                     <div class="auth-errors" v-for="(error, index) of v$.form.password.$errors"
                                         :key="index">
                                         {{ error.$message }}
                                     </div>
-                                    <input ref="pass" v-model="form.password" class="flex-grow-1" type="password" placeholder="Пароль">
+                                    <input ref="pass" v-model="form.password" class="flex-grow-1" type="password"
+                                        placeholder="Пароль">
                                 </div>
                             </div>
                             <div class="col-12">
@@ -40,7 +52,7 @@
                                         :key="index">
                                         {{ error.$message }}
                                     </div>
-                                    <input  v-model="form.repeatPassword" class="flex-grow-1" type="password"
+                                    <input v-model="form.repeatPassword" class="flex-grow-1" type="password"
                                         placeholder="Повторите пароль">
                                 </div>
                             </div>
@@ -59,28 +71,33 @@
     </main>
 </template>
 <script>
-import { email, required, helpers,sameAs } from '@vuelidate/validators'
+import { email, required, helpers, sameAs,minLength } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
-import {userRegistration} from "../api.js"
+import { userRegistration, authorizeUser } from "../api.js"
+import {mask} from 'vue-the-mask'
+
 export default {
     data() {
         return {
             form: {
                 name: null,
                 email: null,
+                phone:null,
                 password: null,
                 repeatPassword: null
             }
         }
     },
-    setup: () => ({ v$: useVuelidate({$autoDirty:true}) }),
+    directives: {mask},
+    setup: () => ({ v$: useVuelidate({ $autoDirty: true }) }),
     validations() {
         return {
             form: {
                 name: { required: helpers.withMessage('Обязательное поле*', required) },
-                email: { required: helpers.withMessage('Обязательное поле*', required), email: helpers.withMessage('Некорректный email*', email) },
+                email: { required: helpers.withMessage('Обязательное поле*', required), email: helpers.withMessage('Некорректный email*', email)},
+                phone: { required: helpers.withMessage('Обязательное поле*', required),minLengthValue: helpers.withMessage('Мин дллина 13 символов', minLength(15)) },
                 password: { required: helpers.withMessage('Обязательное поле*', required) },
-                repeatPassword: { sameAsPassword:helpers.withMessage('Пароли должны совпадать',sameAs(this.form.password) )}
+                repeatPassword: { sameAsPassword: helpers.withMessage('Пароли должны совпадать', sameAs(this.form.password)) }
             }
         }
     },
@@ -90,15 +107,17 @@ export default {
             const isFormCorrect = await this.v$.$validate()
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (isFormCorrect) {
-              const successRegistration=await  userRegistration(this.form.name,this.form.email,this.form.password);
-              if (successRegistration.data.messge="Успех"){  
-                localStorage.setItem("auth",true);
-                this.$router.push('/profile/')
-              }
-              
+                const successRegistration = await userRegistration(this.form.name, this.form.email,this.form.phone, this.form.password, this.form.repeatPassword);;
+                if (successRegistration.data.messge = "Успех") {
+                    let autorizeData = await authorizeUser(this.form.email, this.form.password);
+                    localStorage.setItem("user", JSON.stringify(autorizeData.data.user));
+                    this.$router.push('/profile/')
+                }
+
             }
         }
-    }
+    },
+  
 }
 </script>
 
@@ -150,12 +169,13 @@ export default {
 .section-registration__wrap-btn {
     margin-bottom: 30px;
 }
+
 @media (max-width:767.8px) {
-    .section-registration_form{
+    .section-registration_form {
         padding: 20px;
     }
-    .section-registration .container{
+
+    .section-registration .container {
         padding: 0px;
     }
-}
-</style>
+}</style>

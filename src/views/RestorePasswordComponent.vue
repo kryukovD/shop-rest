@@ -16,31 +16,24 @@
                                     <input v-model="form.email" class="flex-grow-1" type="text" placeholder="Ваш Email">
                                 </div>
                             </div>
+
+
                             <div class="col-12">
+
                                 <div class="section-sign__wrap-input d-flex">
-                                    <div class="auth-errors" v-for="(error, index) of v$.form.password.$errors"
-                                        :key="index">
+                                    <div class="auth-errors" v-for="(error, index) of v$.form.phone.$errors" :key="index">
                                         {{ error.$message }}
                                     </div>
-                                    <input ref="pass" v-model="form.password" class="flex-grow-1" type="password"
-                                        placeholder="Новый пароль">
+                                    <input v-mask="'+7 ### #### ###'" v-model="form.phone" class="flex-grow-1" type="text"
+                                        placeholder="Телефон">
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="section-sign__wrap-input d-flex">
-                                    <div class="auth-errors" v-for="(error, index) of v$.form.repeatPassword.$errors"
-                                        :key="index">
-                                        {{ error.$message }}
-                                    </div>
-                                    <input v-model="form.repeatPassword" class="flex-grow-1" type="password"
-                                        placeholder="Повторите пароль">
-                                </div>
-                            </div>
+
 
 
                         </div>
                         <div class="section-registration__wrap-btn">
-                            <button type="submit" class="btn-auth"> Зарегистрироваться </button>
+                            <button type="submit" class="btn-auth"> Восстановить </button>
                         </div>
                         <div class="section-registration__promt">
                             <span>Имеется аккаунт? <router-link to="/signIn">Войти</router-link> </span>
@@ -51,7 +44,7 @@
         </section>
 
 
-        <section class="section-registration" v-else >
+        <section class="section-registration" v-else>
             <div class="container">
                 <div class="section-registration__inner">
                     <div class="section-registration_form">
@@ -62,8 +55,8 @@
                             </svg>
                         </div>
                         <span class="form-success">Успешно</span>
-                        <p>Ваш пароль изменен</p>
-                        <router-link to="/signIn" class="btn-auth" >Войти</router-link>
+                        <p>Ваш новый пароль отправлен на почту</p>
+                        <router-link to="/signIn" class="btn-auth">Войти</router-link>
 
                     </div>
                 </div>
@@ -73,27 +66,28 @@
     </main>
 </template>
 <script>
-import { email, required, helpers, sameAs } from '@vuelidate/validators'
+import { email, required, helpers, sameAs,minLength } from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 import { restorePasswordUser } from "../api.js"
+import {mask} from 'vue-the-mask'
 export default {
     data() {
         return {
             form: {
                 email: null,
-                password: null,
-                repeatPassword: null
+                phone: null,
             },
-            showSuccess: false
+            showSuccess: false,
+            serverErrors:[]
         }
     },
     setup: () => ({ v$: useVuelidate({ $autoDirty: true }) }),
+    directives: {mask},
     validations() {
         return {
             form: {
                 email: { required: helpers.withMessage('Обязательное поле*', required), email: helpers.withMessage('Некорректный email*', email) },
-                password: { required: helpers.withMessage('Обязательное поле*', required) },
-                repeatPassword: { sameAsPassword: helpers.withMessage('Пароли должны совпадать', sameAs(this.form.password)) }
+                phone: { required: helpers.withMessage('Обязательное поле*', required),minLengthValue: helpers.withMessage('Мин дллина 13 символов', minLength(15)) },
             }
         }
     },
@@ -104,8 +98,9 @@ export default {
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (isFormCorrect) {
                 // $restoreSuccess= await restorePasswordUser(this.form.email,this.form.password);
-                let restoreSuccess = true;
+                let  restoreSuccess= await restorePasswordUser(this.form.email,this.form.phone);
                 if (restoreSuccess) {
+                    console.log(restoreSuccess);
                     this.showSuccess = true;
                 }
             }
@@ -115,7 +110,7 @@ export default {
 </script>
 
 <style scoped>
-.blue-circle{
+.blue-circle {
     width: 72px;
     height: 72px;
     display: flex;
@@ -123,9 +118,10 @@ export default {
     justify-content: center;
     background: #40BFFF;
     border-radius: 50%;
-    margin:0px auto 16px;
+    margin: 0px auto 16px;
 }
-.form-success{
+
+.form-success {
     font-size: 20px;
     line-height: 22.4px;
     font-weight: 700;
@@ -133,13 +129,15 @@ export default {
     display: block;
     text-align: center;
 }
-.form-success ~ p{
+
+.form-success~p {
     font-size: 12px;
     font-weight: 400;
     color: #223263;
     text-align: center;
     margin-bottom: 30px;
 }
+
 .section-sign__wrap-input input::-webkit-input-placeholder {
     color: #9098B1;
     font-size: 16px;

@@ -11,10 +11,11 @@
 export default {
     data() {
         return {
-            user:JSON.parse(localStorage.getItem('user')) || false
+            user:JSON.parse(localStorage.getItem('user')) 
         }
     },
     mounted:function(){
+        console.log(this.user)
         // localStorage.removeItem('user');
     }
 

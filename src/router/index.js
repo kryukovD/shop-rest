@@ -7,6 +7,8 @@ import SignComponent from "../views/SignComponent.vue"
 import RegistrationComponent from "../views/RegistrationComponent.vue"
 import ProfileComponent from "../views/ProfileComponent.vue"
 import RestorePasswordComponent from "../views/RestorePasswordComponent.vue"
+import AddOrderComponent from "../views/addProductComponent.vue"
+import ChatComponent from "../views/ChatApp.vue"
 
 
 const router = createRouter({
@@ -48,10 +50,11 @@ const router = createRouter({
     }
     , {
       path:"/orders",
-      name:"Заказы",
+      name:"orders",
       component:OrdersComponent,
       meta:{
-        requiresAuth:true
+        requiresAuth:true,
+        needAuth:true
       }
     },
     , {
@@ -74,7 +77,8 @@ const router = createRouter({
       path:"/profile",
       name:"profile",
       meta:{
-        requiresAuth:true
+        requiresAuth:true,
+        needAuth:true
       },
       component:ProfileComponent
     },
@@ -85,6 +89,23 @@ const router = createRouter({
         requiresAuth:true
       },
       component:RestorePasswordComponent
+    },
+    {
+      path:"/addOrder",
+      name:"addOrder",
+      meta:{
+        requiresAuth:true
+      },
+      component:AddOrderComponent
+    },
+    {
+      path:"/chats",
+      name:"chats",
+      meta:{
+        requiresAuth:true,
+        needAuth:true
+      },
+      component:ChatComponent
     }
     
 
@@ -92,16 +113,27 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-      if(localStorage.getItem("user")!==null){
+  if (to.matched.some(record => record.meta.requiresAuth && record.meta.needAuth!=true)) {
+      if((localStorage.getItem("user")!=null) && (localStorage.getItem("user")!=undefined) && (localStorage.getItem("user")!=='')  ){
         to.params.user=JSON.parse(localStorage.getItem("user"));
+       
         next();
       } 
+     
       else{
         next();
       }
       
+  }
+  else if (to.matched.some(record => record.meta.requiresAuth && record.meta.needAuth)){
+    if((localStorage.getItem("user")!=null) && (localStorage.getItem("user")!=undefined) && (localStorage.getItem("user")!=='')  ){
+      to.params.user=JSON.parse(localStorage.getItem("user"));
+      next();
+    } 
+   
+    else{
+      next({path:"/signIn"});
+    }
   }
   else{
     next();

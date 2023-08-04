@@ -38,6 +38,16 @@
   src: url("../assets/fonts/Poppins-Regular.ttf");
   font-weight: 400;
 }
+@font-face {
+  font-family: "Roboto";
+  src: url("../assets/fonts/Roboto-Bold.ttf");
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Roboto";
+  src: url("../assets/fonts/Roboto-Regular.ttf");
+  font-weight: 400;
+}
 .container{
   padding: 0px;
   max-width: 1220px;
@@ -103,6 +113,23 @@ ul{
   color: red;
   font-size: 12px;
 }
+.subtitle{
+  display: block;
+  font-size: 22px;
+  line-height: 24.2px;
+  font-weight: 600;
+  font-family: "Inter";
+}
+.btn-default-order{
+  background: #40BFFF;
+  border-radius: 4px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 16px;
+  line-height: 19.4px;
+}
 
 @media (max-width:768px){
   .section-sign-signIn__title{
@@ -118,6 +145,8 @@ ul{
         color: #9098B1;
         font-weight: 500;
     }
-  
+    .subtitle{
+      font-size: 20px;
+    }
 
 }

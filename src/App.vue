@@ -1,18 +1,24 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
 import AppHeader from "./components/AppHeader.vue"
+// import { getAllOrders} from "../api.js";
+
 export default{
   components:{
     "app-header":AppHeader
+  }
+  ,methods:{
+    addOrder(){
+      
+    }
   }
 }
 
 </script>
 
 <template>
-  <app-header></app-header>
-
-  <RouterView />
+  <app-header  ></app-header>
+  <RouterView @addOrder="addOrder()"/>
 </template>
 
 <style>
