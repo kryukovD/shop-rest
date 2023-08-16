@@ -97,6 +97,7 @@ methods: {
             this.message=null
             localStorage.setItem('user',JSON.stringify(resultAuth.data.user));
               this.$router.push("/profile");
+              this.$emit("userAuth");
         }
         
       }

@@ -1,24 +1,52 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
 import AppHeader from "./components/AppHeader.vue"
+import AppFooter from "./components/FooterComponent.vue"
+import {getAllProductsForUsers} from "./api.js"
 // import { getAllOrders} from "../api.js";
 
 export default{
   components:{
-    "app-header":AppHeader
+    "app-header":AppHeader,
+    "app-footer":AppFooter
+
+  },
+  data(){
+    return{
+      countBaskets:0
+    }
   }
   ,methods:{
     addOrder(){
-      
+      this.countBaskets++;
+    },
+    updateBasket(){
+      getAllProductsForUsers(JSON.parse(localStorage.getItem("user")).api_token).then((response) => {
+      this.countBaskets=response.data.data.length
+    })
+    },
+    zeroing(){
+      this.countBaskets=0
     }
+  }
+  ,
+  created(){
+    if(localStorage.getItem("user")!==null){
+      getAllProductsForUsers(JSON.parse(localStorage.getItem("user")).api_token).then((response) => {
+      this.countBaskets=response.data.data?.length || 0
+    })
+    }
+   
+
   }
 }
 
 </script>
 
 <template>
-  <app-header  ></app-header>
-  <RouterView @addOrder="addOrder()"/>
+  <app-header :countBaskets="countBaskets"  ></app-header>
+  <RouterView @addOrder="addOrder()" @userAuth="updateBasket" @zeroing="zeroing()"/>
+  <app-footer :counterBasket="countBaskets"> </app-footer>
 </template>
 
 <style>

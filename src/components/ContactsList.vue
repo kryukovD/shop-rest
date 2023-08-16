@@ -1,5 +1,5 @@
 <template>
-    <div class="contacts-list">
+    <div class="contacts-list" v-if="contacts.length>0">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white gap-5">
                 <span>Contacts</span>
@@ -34,6 +34,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="contacts-list" v-else>
+        <p> пусто </p>
     </div>
 </template>
 

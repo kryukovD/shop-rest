@@ -1,4 +1,9 @@
 <script>
+export default{
+   props:{
+    counterBasket:Number
+   }
+}
 </script>
 <template>
   <footer >
@@ -112,7 +117,7 @@
               stroke-linejoin="round"
             />
           </svg>
-          <div class="order-count">2</div>
+          <div class="order-count">{{ counterBasket }}</div>
           Заказы
         </router-link>
 

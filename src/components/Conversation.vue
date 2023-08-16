@@ -21,7 +21,7 @@
 import MessagesFeed from "../components/MessagesFeed.vue";
 import MessageComposer from "../components/MessageComposer.vue";
 import axios from 'axios'
-const server = import.meta.env.VITE_APP_SERVER
+const server = import.meta.env.VITE_APP_URL
 
 export default {
     props: {
@@ -48,7 +48,7 @@ export default {
                 id:JSON.parse(localStorage.getItem('user')).id,
                 contact_id: this.contact.id,
                 text: text,
-            }).then(response => {
+            },{headers:{'Authorization':JSON.parse(localStorage.getItem("user")).api_token}}).then(response => {
                 this.$emit('new', response.data);
             })
         }
@@ -58,8 +58,7 @@ export default {
         MessageComposer
     },
     mounted() {
-        console.log(this.contact);
-        console.log('Component mounted.')
+     
     }
 }
 </script>

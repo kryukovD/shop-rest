@@ -1,7 +1,6 @@
 
 <template>
- 
-  <main class="d-flex flex-column"  >
+  <main class="d-flex flex-column">
     <section class="section-detail-card">
 
       <!-- Хлебные крошки-->
@@ -101,49 +100,49 @@
                 <section id="main-carousel" class="splide"
                   aria-label="The carousel with thumbnails. Selecting a thumbnail will change the Beautiful Gallery carousel.">
                   <div class="splide__track">
-                
+
                     <ul class="splide__list">
-                    
+
                       <li class="splide__slide">
-                        <img   :src="apiServer + detailCard.images?.detail" alt="" />
+                        <img :src="apiServer + detailCard.images?.detail" alt="" />
                       </li>
-                     
-                      <li class="splide__slide"  v-for="(itemImg, imgKey) of detailCard.images?.additiomal" :key="imgKey">
-                        
-                          <img :src="apiServer + itemImg" alt="" />
-                       
+
+                      <li class="splide__slide" v-for="(itemImg, imgKey) of detailCard.images?.additiomal" :key="imgKey">
+
+                        <img :src="apiServer + itemImg" alt="" />
+
 
                       </li>
-                   
-                    
 
-                    
+
+
+
                     </ul>
-                  
+
                   </div>
                 </section>
 
                 <section id="thumbnail-carousel" class="splide"
                   aria-label="The carousel with thumbnails. Selecting a thumbnail will change the Beautiful Gallery carousel.">
                   <div class="splide__track">
-                  
+
                     <ul class="splide__list">
-                   
-                     
+
+
                       <li class="splide__slide">
 
-                        <img  :src="apiServer + detailCard.images?.detail" alt="" />
+                        <img :src="apiServer + detailCard.images?.detail" alt="" />
                       </li>
-                     
-                      <li class="splide__slide"   v-for="(itemImg, imgKey) of detailCard.images?.additiomal" :key="imgKey">
-                        
-                          <img :src="apiServer + itemImg" alt="" />
-                        
+
+                      <li class="splide__slide" v-for="(itemImg, imgKey) of detailCard.images?.additiomal" :key="imgKey">
+
+                        <img :src="apiServer + itemImg" alt="" />
+
                       </li>
-                    
+
 
                     </ul>
-                 
+
                   </div>
                 </section>
               </div>
@@ -226,7 +225,7 @@
                   </div>
                 </div>
                 <!-- Профиль-->
-                <div class="detail-card-profile" >
+                <div class="detail-card-profile">
                   <div class="d-flex detail-card-profile__person align-items-center">
                     <div class="detail-card-profile__image">
                       <img src="../assets/images/profile.png" />
@@ -249,8 +248,10 @@
                   </div>
 
                   <div class="d-flex detail-card-profile__buttons">
-                    <a class="btn-chat inline-flex" href="javascript:void(0)" @click="addToChat(detailCard.id)">Чат</a>
-                    <a class="btn-to-work inline-flex" ref="takeOrder" @click="addOrderToUserByClick(detailCard.author.id)" href="javascript:void(0)">Взять в работу</a>
+                    <a class="btn-chat inline-flex" ref="addToChat" href="javascript:void(0)"
+                      @click="addToChat(detailCard.id)">Чат</a>
+                    <a class="btn-to-work inline-flex" ref="takeOrder" @click="addOrderToUserByClick(detailCard.id)"
+                      href="javascript:void(0)">Взять в работу</a>
                   </div>
                 </div>
               </div>
@@ -260,12 +261,11 @@
       </div>
     </section>
   </main>
-  <app-footer></app-footer>
 </template>
 <script>
 import FooterComponent from "../components/FooterComponent.vue";
 import Splide from "@splidejs/splide";
-import { getProductById, getCurrentCategory ,addOrderToUser,getAllProductsForUsers,addToChat} from "../api.js";
+import { getProductById, getCurrentCategory, addOrderToUser, getAllProductsForUsers, addToChat, getAllContacts } from "../api.js";
 import BreadCrumbsComponent from "../components/Breadcrumb.vue"
 const apiServer = import.meta.env.VITE_APP_SERVER
 
@@ -277,33 +277,60 @@ export default {
       category: {},
       breadcrumbs: [],
       apiServer: apiServer,
-      loadingData: false
+      loadingData: false,
+      acceptOrders: []
+
     };
   },
   components: {
     "app-footer": FooterComponent,
     "Breadcrumbs": BreadCrumbsComponent
   },
- 
+
   methods: {
 
-    async addOrderToUserByClick(id){
-      this.$emit("addOrder");
-      let result=await addOrderToUser(id,JSON.parse(localStorage.getItem("user")).api_token);
-
-      if(result.data.message=='Новый заказ'){
-        if (this.$refs.takeOrder.classList.contains("towork")){
-          this.$router.push({name:'orders',query:{type:'buying'},params:{type:'buying'}});
-          return false;
-        }
-        this.$refs.takeOrder.innerText="В работе"
-        this.$refs.takeOrder.classList.add("towork")
-        
+    async addOrderToUserByClick(id) {
+      if(JSON.parse(localStorage.getItem("user"))==null){
+        this.$router.push({path:"/signIn"})
+        return false
       }
+
+      let filterOrders=this.acceptOrders?.filter((item,i)=>{
+       if(item.product_id==this.detailCard.id){
+          return true;
+        }
+      })
+      if (!filterOrders.length>0){
+        this.$emit("addOrder");
+      }
+     
+      if (!this.$refs.takeOrder.classList.contains("towork")) {
+      let result = await addOrderToUser(id, JSON.parse(localStorage.getItem("user")).api_token);
+
+      if (result.data.message == 'Новый заказ') {
+        this.$refs.takeOrder.innerText = "Уже взят"
+        this.$refs.takeOrder.classList.add("towork")
+        this.$router.push({ name: 'orders', query: { type: 'buying' }, params: { type: 'buying' } });
+     
+      }
+    }
+    else{
+      this.$router.push({ name: 'orders', query: { type: 'buying' }, params: { type: 'buying' } });
+          return false;
+    }
     },
-    addToChat(id){
-      addToChat(id,JSON.parse(localStorage.getItem("user")).api_token).then((response)=>{
-          console.log(response)
+    addToChat(id) {
+      if(JSON.parse(localStorage.getItem("user"))==null){
+        this.$router.push({path:"/signIn"})
+        return false
+      }
+      if (this.$refs.addToChat.classList.contains("tochat")) {
+        this.$router.push({ path: '/chats' });
+        return false;
+      }
+      addToChat(id, JSON.parse(localStorage.getItem("user")).api_token).then((response) => {
+        this.$refs.addToChat.innerText = "В чат"
+        this.$refs.addToChat.classList.add("tochat")
       })
     },
     initMainSlider() {
@@ -342,10 +369,9 @@ export default {
       getProductById(this.$route.params.id).then((responce) => {
         this.detailCard = responce.data.data;
         getCurrentCategory(this.detailCard.category_id).then((categoryResponce) => {
-          console.log(categoryResponce)
-            this.category = categoryResponce.data.category;
-            this.createBreadcrumbs()
-            this.loadingData = true
+          this.category = categoryResponce.data.category;
+          this.createBreadcrumbs()
+          this.loadingData = true
 
         });
       });
@@ -368,19 +394,49 @@ export default {
   },
   created() {
     this.getProduct();
-    getAllProductsForUsers(JSON.parse(localStorage.getItem("user")).api_token).then((response)=>{
-      console.log(response)
-    })
+
   },
   mounted() {
-   this.initMainSlider();
+    this.initMainSlider();
+    if (JSON.parse(localStorage.getItem("user")) !== null) {
+      getAllProductsForUsers(JSON.parse(localStorage.getItem("user")).api_token).then((response) => {
+        console.log(response);
+        this.acceptOrders = response.data.data
+        console.log(this.acceptOrders)
+        if(this.acceptOrders?.length>0){
+        this.acceptOrders.forEach((item, i) => {
+          
+          if (item.product_id == this.detailCard.id) {
+            this.$refs.takeOrder.innerText = "Уже взят"
+            this.$refs.takeOrder.classList.add("towork")
+          }
+        }
+     
+        );
+      }
+      })
+    }
+
+    if (JSON.parse(localStorage.getItem("user"))!== null) {
+      getAllContacts(JSON.parse(localStorage.getItem("user")).api_token).then((contacts) => {
+        if(contacts.data.length>0){
+        contacts.data.forEach((item, i) => {
+          if (item.id==this.detailCard.author.id) {
+            this.$refs.addToChat.innerText = "В чат"
+            this.$refs.addToChat.classList.add("tochat")
+           
+          }
+        })
+      }
+      })
+    }
   },
-  watch:{
-    loadingData:function(){
+  watch: {
+    loadingData: function () {
       this.initMainSlider();
     }
   }
-  
+
 
 
 };
@@ -837,7 +893,8 @@ img {
     aspect-ratio: 337/450;
     object-fit: cover;
   }
-  .detail-card-profile__buttons{
+
+  .detail-card-profile__buttons {
     flex-wrap: wrap;
     gap: 10px;
   }

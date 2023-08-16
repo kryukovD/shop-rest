@@ -81,7 +81,8 @@
 
 
             <div class="grid-orders">
-              <router-link  to="/"
+
+              <router-link  v-for="(acceptOrder,key) of acceptOrders" :to="'/catalog/'+acceptOrder.id" :key="key"
               class="catalog-card d-flex flex-column"
                >
           <div class="catalog-card__image-wrapper order-1 order-md-1">
@@ -89,7 +90,7 @@
           </div>
           <div class="catalog-card__description order-4 order-md-2">
             <div class="catalog-card__price">
-              <span>139  ₽</span>
+              <span>{{ acceptOrder.price }}  ₽</span>
             </div>
           </div>
           <div
@@ -98,134 +99,25 @@
             <div class="wb-discount d-flex align-items-center">
               <a class="d-flex align-items-center" href="javascript:void(0)"
                 ><img src="../assets/images/icons/wb.png" />
-                <span class="wb-discount__price">240 ₽ </span>
+                <span class="wb-discount__price">{{ acceptOrder.price_discount }} ₽ </span>
               </a>
             </div>
             <div class="cashback d-flex align-items-center">
               <span> Кэшбэк 1400 ₽ </span>
-              <div class="discount-icon">30%</div>
+              <div class="discount-icon">{{acceptOrder.discount}}%</div>
             </div>
           </div>
           <div class="catalog-card__quantity d-flex order-5 order-md-4">
             <span
-              >В наличии 2/10 шт</span
+              >В наличии {{acceptOrder.leff_count}} / {{acceptOrder.total_count}} шт</span
             >
           </div>
           <div class="catalog-card__title order-2 order-md-5">
-            <span>Nike Air Max 270 React ENG  </span>
+            <span>{{acceptOrder.name}}</span>
           </div>
        
       </router-link>
 
-      <router-link  to="/"
-              class="catalog-card d-flex flex-column"
-               >
-          <div class="catalog-card__image-wrapper order-1 order-md-1">
-            <img src="../assets/card.png" />
-          </div>
-          <div class="catalog-card__description order-4 order-md-2">
-            <div class="catalog-card__price">
-              <span>139  ₽</span>
-            </div>
-          </div>
-          <div
-            class="catalog-card__discount d-flex align-items-center order-3 order-md-3"
-          >
-            <div class="wb-discount d-flex align-items-center">
-              <a class="d-flex align-items-center" href="javascript:void(0)"
-                ><img src="../assets/images/icons/wb.png" />
-                <span class="wb-discount__price">240 ₽ </span>
-              </a>
-            </div>
-            <div class="cashback d-flex align-items-center">
-              <span> Кэшбэк 1400 ₽ </span>
-              <div class="discount-icon">30%</div>
-            </div>
-          </div>
-          <div class="catalog-card__quantity d-flex order-5 order-md-4">
-            <span
-              >В наличии 2/10 шт</span
-            >
-          </div>
-          <div class="catalog-card__title order-2 order-md-5">
-            <span>Nike Air Max 270 React ENG  </span>
-          </div>
-       
-      </router-link>
-
-
-      <router-link  to="/"
-              class="catalog-card d-flex flex-column"
-               >
-          <div class="catalog-card__image-wrapper order-1 order-md-1">
-            <img src="../assets/card.png" />
-          </div>
-          <div class="catalog-card__description order-4 order-md-2">
-            <div class="catalog-card__price">
-              <span>139  ₽</span>
-            </div>
-          </div>
-          <div
-            class="catalog-card__discount d-flex align-items-center order-3 order-md-3"
-          >
-            <div class="wb-discount d-flex align-items-center">
-              <a class="d-flex align-items-center" href="javascript:void(0)"
-                ><img src="../assets/images/icons/wb.png" />
-                <span class="wb-discount__price">240 ₽ </span>
-              </a>
-            </div>
-            <div class="cashback d-flex align-items-center">
-              <span> Кэшбэк 1400 ₽ </span>
-              <div class="discount-icon">30%</div>
-            </div>
-          </div>
-          <div class="catalog-card__quantity d-flex order-5 order-md-4">
-            <span
-              >В наличии 2/10 шт</span
-            >
-          </div>
-          <div class="catalog-card__title order-2 order-md-5">
-            <span>Nike Air Max 270 React ENG  </span>
-          </div>
-       
-      </router-link>
-
-
-      <router-link  to="/"
-              class="catalog-card d-flex flex-column"
-               >
-          <div class="catalog-card__image-wrapper order-1 order-md-1">
-            <img src="../assets/card.png" />
-          </div>
-          <div class="catalog-card__description order-4 order-md-2">
-            <div class="catalog-card__price">
-              <span>139  ₽</span>
-            </div>
-          </div>
-          <div
-            class="catalog-card__discount d-flex align-items-center order-3 order-md-3"
-          >
-            <div class="wb-discount d-flex align-items-center">
-              <a class="d-flex align-items-center" href="javascript:void(0)"
-                ><img src="../assets/images/icons/wb.png" />
-                <span class="wb-discount__price">240 ₽ </span>
-              </a>
-            </div>
-            <div class="cashback d-flex align-items-center">
-              <span> Кэшбэк 1400 ₽ </span>
-              <div class="discount-icon">30%</div>
-            </div>
-          </div>
-          <div class="catalog-card__quantity d-flex order-5 order-md-4">
-            <span
-              >В наличии 2/10 шт</span
-            >
-          </div>
-          <div class="catalog-card__title order-2 order-md-5">
-            <span>Nike Air Max 270 React ENG  </span>
-          </div>
-       
-      </router-link>
             </div>
 
           </div>
@@ -234,18 +126,19 @@
       </div>
     </section>
   </main>
-  <app-footer></app-footer>
 </template>
 <script>
 import FooterComponent from "../components/FooterComponent.vue";
 import BreadCrumbsComponent from "../components/Breadcrumb.vue"
+import { getAllProductsForUsers } from "../api";
 export default {
   data() {
     return {
       breadcrumbs: [],
       howWorkDisplay: false,
       orders:[],
-      activeFilter:1
+      activeFilter:1,
+      acceptOrders:[],
     };
   },
   components: {
@@ -254,6 +147,9 @@ export default {
   },
   created() {
     this.createBreadcrumbs()
+    getAllProductsForUsers(JSON.parse(localStorage.getItem("user")).api_token).then((response) => {
+      this.acceptOrders = response.data.data
+    })
   },
 
   methods: {

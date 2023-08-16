@@ -1,5 +1,5 @@
 <script>
-import { getCategories, getChildCategories } from "../api.js"
+import { getCategories, getChildCategories,getAllProductsForUsers } from "../api.js"
 import { ref } from "vue";
 export default {
   data() {
@@ -9,12 +9,17 @@ export default {
       isActiveMenu: false,
       activeEl: 0,
       isOpenSearchFilter: false,
+      
       filter: {
         price: 0,
       },
       user:null
     };
   },
+  props:{
+    countBaskets:Number,
+  },
+
   setup() {
     const menu = ref(null);
     return {
@@ -25,6 +30,8 @@ export default {
     getCategories().then((responce) => {
       this.categories = responce.data
     })
+
+  
      
   },
   mounted: function () {
@@ -297,7 +304,7 @@ export default {
             </li>
 
             <li>
-              <router-link class="d-flex flex-column navgation-ui__link align-items-center" to="/orders">
+              <router-link class="d-flex flex-column navgation-ui__link align-items-center link-orders" to="/orders">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M7.22255 18.8885C7.52937 18.8885 7.7781 18.6397 7.7781 18.3329C7.7781 18.0261 7.52937 17.7773 7.22255 17.7773C6.91572 17.7773 6.66699 18.0261 6.66699 18.3329C6.66699 18.6397 6.91572 18.8885 7.22255 18.8885Z"
@@ -312,6 +319,7 @@ export default {
                 </svg>
 
                 Заказы
+                <span>{{this.countBaskets }}</span>
               </router-link>
             </li>
 
@@ -383,6 +391,25 @@ export default {
 </template>
 
 <style scoped>
+ .link-orders{
+    position: relative;
+  }
+  .link-orders span{
+    display: inline-flex;
+    font-family: "Poppins";
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    aspect-ratio: 1/1;
+    padding: 2px;
+    right: -1px;
+    top: -5px;
+    background: #fb7181;
+    border-radius: 50%;
+    color: white;
+    width: 20px;
+    font-size: 9px;
+  }
 header {
   border-bottom: 1px solid #ebf0ff;
 }
@@ -725,6 +752,8 @@ ul {
     user-select: none;
     transition: 0.3s ease;
   }
+ 
+
 
   .search-form-filter__item input[type=checkbox]:checked+label {
     background: #40BFFF1A;

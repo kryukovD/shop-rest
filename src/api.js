@@ -35,11 +35,10 @@ export const addOrderFromUser=function(formData,api_token){
 }
 /** Нужен токен */
 export const addOrderToUser =function(id,api_token){
-    return axios.post(`${apiurl}/catalog/product/${id}/createBid`,{headers:{'Authorization':api_token}})
+    return axios.post(`${apiurl}/catalog/product/${id}/createBid`,{},{headers:{'Authorization':api_token}})
 }
 /* Получение всех товаров */
 export const getAllProductsForUsers =function(api_token){
-    console.log(api_token)
     return axios.get(`${apiurl}/user/allBids`,{headers:{'Authorization':api_token}})
 }
 
@@ -58,7 +57,11 @@ export const restorePasswordUser=function(email,phone){
 
 /*Чат */
 export const addToChat=function(id,api_token){
-    return axios.post(`${apiurl}/catalog/product/${id}/createChat`,{headers:{'Authorization':api_token}});
+    return axios.post(`${apiurl}/catalog/product/${id}/createChat`,{},{headers:{'Authorization':api_token}});
    
+}
+/*Получаем все контакты  */
+export const getAllContacts=function(api_token){
+    return axios.get(`${apiurl}/contacts`,{headers:{'Authorization':api_token}});
 }
 

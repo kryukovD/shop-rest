@@ -37,10 +37,10 @@ export default {
     },
     getCategory() {
       getCurrentCategory(this.$route.params.id).then((responce) => {
+        console.log(responce)
         this.dataCategory = responce.data.category;
-        this.createBreadCrumbs()
-        
-      getChildCategories(responce.data.id).then((responseChildren) => {
+        this.createBreadCrumbs()  
+      getChildCategories(responce.data.category.id).then((responseChildren) => {
         this.childrenCategories = responseChildren.data.child_category
 
       });

@@ -2,35 +2,38 @@
     <section>
         <div class="container">
             <div class="chat-app">
-                <ContactsList :contacts="contacts" @selected="startConversationWith"/>
-                <Conversation :contact="selectedContact" :messages="messages" @new="saveNewMessage"/>
+                <ContactsList :contacts="contacts" @selected="startConversationWith" />
+                <Conversation :contact="selectedContact" :messages="messages" @new="saveNewMessage" />
             </div>
-    </div>
-</section>
+        </div>
+    </section>
 </template>
 
 <script>
 import Conversation from "../components/Conversation.vue"
 import ContactsList from "../components/ContactsList.vue";
 import axios from 'axios'
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
 const server = import.meta.env.VITE_APP_URL
 
 export default {
- 
+
     name: "ChatApp",
     data() {
         return {
             selectedContact: null,
             contacts: [],
             messages: [],
-            server:server,
-            user:JSON.parse(localStorage.getItem("user")) 
+            server: server,
+            user: JSON.parse(localStorage.getItem("user"))
         }
     },
     methods: {
         startConversationWith(contact) {
             this.updateUnreadCount(contact, true)
-            axios.get(`${server}/conversation/${contact.id}`)
+            axios.get(`${server}/conversation/${contact.id}`, { headers: { 'Authorization': JSON.parse(localStorage.getItem("user")).api_token } })
                 .then(response => {
                     this.messages = response.data;
                     this.selectedContact = contact;
@@ -40,12 +43,10 @@ export default {
             this.messages.push(message);
         },
         handleIncoming(message) {
-            if (this.selectedContact && message.from === this.selectedContact.id) {
-                console.log(selectedContact.id);
+             if (this.selectedContact && message.from === this.selectedContact.id) {
                 this.messages.push(message);
                 return;
-            }
-
+             }
             //unread messages
             this.updateUnreadCount(message.from_contact, false);
         },
@@ -63,12 +64,34 @@ export default {
             })
         }
     },
+    created() {
+        window.Pusher = Pusher;
+        let api_token = '';
+        if (localStorage.getItem("user") !== null) {
+            api_token=JSON.parse(localStorage.getItem("user")).api_token
+        }
+        window.Echo = new Echo({
+            broadcaster: 'pusher',
+            key: import.meta.env.VITE_PUSHER_APP_KEY,
+            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+            authEndpoint: "http://shop-rest.tw1.ru/broadcasting/auth",
+            auth: {
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: api_token
+                }
+            }
+
+
+        });
+    },
     mounted() {
-        Echo.private(`messages.${this.user.id}`)  /*${this.user.id}*/
+        window.Echo.private(`messages.${this.user.id}`)  /*${this.user.id}*/
             .listen('NewMessage', (e) => {
+                console.log(true)
                 this.handleIncoming(e.message);
             })
-        axios.get(`${server}/contacts`)
+        axios.get(`${server}/contacts`, { headers: { 'Authorization': JSON.parse(localStorage.getItem('user')).api_token } })
             .then(response => {
                 this.contacts = response.data;
             });
@@ -81,7 +104,6 @@ export default {
 </script>
 
 <style  scoped>
-
 .chat-app {
     display: flex;
     gap: 18px;

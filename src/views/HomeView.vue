@@ -13,6 +13,4 @@
   <main>
     <app-catalog></app-catalog>
   </main>
-  <app-footer  ></app-footer>
-
 </template>

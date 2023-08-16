@@ -64,6 +64,7 @@
                         <div class="section-registration__promt">
                             <span>Имеется аккаунт? <router-link to="/signIn">Войти</router-link> </span>
                         </div>
+                        <p class="server-errors" v-if="serverMessage!==null">{{ serverMessage }}</p>
                     </form>
                 </div>
             </div>
@@ -85,7 +86,8 @@ export default {
                 phone:null,
                 password: null,
                 repeatPassword: null
-            }
+            },
+            serverMessage:null
         }
     },
     directives: {mask},
@@ -107,11 +109,15 @@ export default {
             const isFormCorrect = await this.v$.$validate()
             // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
             if (isFormCorrect) {
-                const successRegistration = await userRegistration(this.form.name, this.form.email,this.form.phone, this.form.password, this.form.repeatPassword);;
-                if (successRegistration.data.messge = "Успех") {
+                const successRegistration = await userRegistration(this.form.name, this.form.email,this.form.phone, this.form.password, this.form.repeatPassword);
+                if (successRegistration.data.message==true) {
                     let autorizeData = await authorizeUser(this.form.email, this.form.password);
                     localStorage.setItem("user", JSON.stringify(autorizeData.data.user));
+                    this.$emit("zeroing");
                     this.$router.push('/profile/')
+                }
+                else{
+                    this.serverMessage="Такой пользователь уже сущесттвует"
                 }
 
             }
@@ -122,6 +128,12 @@ export default {
 </script>
 
 <style scoped>
+.server-errors{
+    text-align: center;
+    margin-top: 5px;
+    color: red;
+    font-size: 12px;
+}
 .section-sign__wrap-input input::-webkit-input-placeholder {
     color: #9098B1;
     font-size: 16px;
